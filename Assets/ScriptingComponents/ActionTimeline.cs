@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+//TODO actions with durations
 public class ActionTimeline : ActionBase
 {
 	[System.Serializable]
@@ -15,6 +16,8 @@ public class ActionTimeline : ActionBase
 	public List<CinematicAction> actions = new List<CinematicAction>();
 
 	private float _currentTime = 0;
+
+	//figure out when the last action happens. only increase time until it's passed
 	private float _endTime = 0;
 
 	public override void Activate (GameObject entity)

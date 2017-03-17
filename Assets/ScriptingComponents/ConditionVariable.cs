@@ -2,36 +2,26 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ConditionGlobalVariable : ConditionComponent
+
+//TODO this should be expandable to check a global/local blackboard of data, not just PlayerPrefs
+public class ConditionVariable : ConditionBase
 {
-	[SerializeField] public string VariableName;
-	[SerializeField] public VariableType ExpectedType;
+	[HideInInspector] public string VariableName;
+	[HideInInspector] public VariableType ExpectedType;
 
-	//public VariableSource VariableSource = VariableSource.Global;
-
-	public CompareOperator compareOperator;
+	[HideInInspector] public CompareOperator compareOperator;
 
 
-	//public Fungus.VariableSource VariableSource;
-
-	[Tooltip("Boolean value to compare against")]
-	//[SerializeField] protected BooleanData booleanData;
 	[HideInInspector]
 	public bool boolCompare;
 
-	[Tooltip("Integer value to compare against")]
 	[HideInInspector]
-	//[SerializeField] protected IntegerData integerData;
 	public int integerCompare;
 
-	[Tooltip("Float value to compare against")]
 	[HideInInspector]
-	//[SerializeField] protected FloatData floatData;
 	public float floatCompare;
 
-	[Tooltip("String value to compare against")]
 	[HideInInspector]
-	//[SerializeField] protected StringDataMulti stringData;
 	public string stringCompare;
 
 	public override void Activate (GameObject instigator)
@@ -46,21 +36,15 @@ public class ConditionGlobalVariable : ConditionComponent
 		}
 	}
 
+	//TODO split up this into EvaluateBool(comparetype,source,target), EvaluateInt(comparetype,source,target), etc
 	protected virtual bool EvaluateCondition()
 	{
-		/*BooleanVariable booleanVariable = variable as BooleanVariable;
-            IntegerVariable integerVariable = variable as IntegerVariable;
-            FloatVariable floatVariable = variable as FloatVariable;
-            StringVariable stringVariable = variable as StringVariable;*/
-
 		bool condition = false;
 
 		bool booleanData = false;
 		int integerData = 0;
 		float floatData = 0;
 		string stringData = "";
-
-
 
 		switch (ExpectedType)
 		{
@@ -139,23 +123,6 @@ public class ConditionGlobalVariable : ConditionComponent
 			}
 			break;
 		}
-
-		/*if (booleanVariable != null)
-            {
-                condition = booleanVariable.Evaluate(compareOperator, booleanData.Value);
-            }
-            else if (integerVariable != null)
-            {
-                condition = integerVariable.Evaluate(compareOperator, integerData.Value);
-            }
-            else if (floatVariable != null)
-            {
-                condition = floatVariable.Evaluate(compareOperator, floatData.Value);
-            }
-            else if (stringVariable != null)
-            {
-                condition = stringVariable.Evaluate(compareOperator, stringData.Value);
-            }*/
 
 		return condition;
 	}

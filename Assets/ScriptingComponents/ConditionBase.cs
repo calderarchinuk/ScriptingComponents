@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ConditionComponent : ActionBase
+public class ConditionBase : ActionBase
 {
 	public List<GameObject> PassActions = new List<GameObject>();
 	public List<GameObject> FailActions = new List<GameObject>();
@@ -32,7 +32,16 @@ public class ConditionComponent : ActionBase
 
 	public override void OnDrawGizmos ()
 	{
-		base.OnDrawGizmos ();
+		#if UNITY_EDITOR
+		GUIStyle style = new GUIStyle();
+		style.normal.textColor = Color.blue; 
+		UnityEditor.Handles.Label(transform.position + Vector3.up*1.5f, gameObject.name,style);
+		#endif
+
+		Gizmos.color = new Color(0.5f,0.5f,1.5f);
+		Gizmos.DrawCube(transform.position,new Vector3(0.8f,1.8f,0));
+
+
 
 		Gizmos.color = Color.green;
 		foreach (var v in PassActions)

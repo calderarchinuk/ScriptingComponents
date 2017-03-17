@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ActionEnable : ActionBase
+public class ActionSetEnable : ActionBase
 {
 	public GameObject[] _enableTargets;
 	public bool enable = true;

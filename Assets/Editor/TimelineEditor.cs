@@ -37,8 +37,6 @@ public class TimelineEditor : Editor
 		{
 			_selectionSeed = System.DateTime.Now.Minute + System.DateTime.Now.Millisecond;
 		}
-		//_hasCinematicEnd = false;
-		//_hasCinematicFade = false;
 
 		//draw across the top of the inspector to get the current width
 		GUILayout.BeginHorizontal();

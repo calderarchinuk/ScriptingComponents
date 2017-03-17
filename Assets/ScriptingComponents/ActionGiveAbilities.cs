@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//this was useful for the tutorial
 public class ActionGiveAbilities : ActionBase
 {
 	public string[] AbilityNames;

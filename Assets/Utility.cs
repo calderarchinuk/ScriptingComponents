@@ -81,7 +81,7 @@ public static class Utility
 		return new Quaternion(Random.Range(0,1f),Random.Range(0,1f),Random.Range(0,1f),Random.Range(0,1f));
 	}
 
-	public static Vector3 Grounded(Vector3 position)
+	public static Vector3 GroundedPosition(Vector3 position)
 	{
 		RaycastHit hit = new RaycastHit();
 		if (Physics.Raycast(position,Vector3.down, out hit, 10, LayerMask.GetMask("Ground")))
@@ -105,5 +105,23 @@ public static class Utility
 		char[] chars = new char[bytes.Length / sizeof(char)];
 		System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
 		return new string(chars);
+	}
+
+	public static void GroundGizmo(Vector3 position)
+	{
+		RaycastHit hit = new RaycastHit();
+		if (Physics.Raycast(position,Vector3.down,out hit, 100))
+		{
+			Gizmos.DrawWireCube(hit.point,new Vector3(0.5f,0,0.5f));
+			Gizmos.DrawLine(position,hit.point);
+		}
+	}
+
+	public static Matrix4x4 MatrixLerp(Matrix4x4 from, Matrix4x4 to, float time)
+	{
+		Matrix4x4 ret = new Matrix4x4();
+		for (int i = 0; i < 16; i++)
+			ret[i] = Mathf.Lerp(from[i], to[i], time);
+		return ret;
 	}
 }
