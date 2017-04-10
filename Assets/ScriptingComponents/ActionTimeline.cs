@@ -49,4 +49,25 @@ public class ActionTimeline : ActionBase
 			yield return null;
 		}
 	}
+
+	public override void OnDrawGizmos ()
+	{
+		base.OnDrawGizmos ();
+		Gizmos.color = Color.blue;
+		Gizmos.DrawLine(transform.position - transform.right*5 + Vector3.up,transform.position + transform.right*5 + Vector3.up);
+		for (int i = 0; i<=10; i++)
+		{
+			Gizmos.DrawRay(Vector3.Lerp(transform.position - transform.right*5,transform.position + transform.right*5,i/10f) + Vector3.up,Vector3.up*0.2f);
+		}
+
+		Gizmos.color = Color.green;
+		foreach (var v in actions)
+		{
+			if (v == null){continue;}
+			var actionColour = Utility.RandomColour(Utility.CurrentSeed + v.Action.GetInstanceID());
+			Gizmos.color = actionColour;
+			Gizmos.DrawLine(v.Action.transform.position,Vector3.Lerp(transform.position - transform.right*5,transform.position + transform.right*5,v.Delay/10f) + Vector3.up);
+			Gizmos.DrawRay(Vector3.Lerp(transform.position - transform.right*5,transform.position + transform.right*5,v.Delay/10f) + Vector3.up,Vector3.up*0.2f);
+		}
+	}
 }

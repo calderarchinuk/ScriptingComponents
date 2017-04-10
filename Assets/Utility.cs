@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 public static class Utility
 {
+	public static int CurrentSeed {
+		get;
+		set;
+	}
+
 	/// <summary>
 	/// returns a position in a random direction in 1 meter
 	/// </summary>

@@ -14,7 +14,7 @@ using UnityEditor;
 public class TimelineEditor : Editor
 {
 	ActionTimeline _timeline;
-	int _selectionSeed; //so colours of actions don't change every update
+	//int _selectionSeed; //so colours of actions don't change every update
 	Rect _timelineRect;
 	//bool _hasCinematicEnd = false;
 	//bool _hasCinematicFade = false;
@@ -33,16 +33,16 @@ public class TimelineEditor : Editor
 	public override void OnInspectorGUI ()
 	{
 		_timeline = (ActionTimeline)target;
-		if (_selectionSeed == 0)
+		if (Utility.CurrentSeed == 0)
 		{
-			_selectionSeed = System.DateTime.Now.Minute + System.DateTime.Now.Millisecond;
+			Utility.CurrentSeed = System.DateTime.Now.Minute + System.DateTime.Now.Millisecond;
 		}
 
 		//draw across the top of the inspector to get the current width
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("");
 		Rect _headerRect = GUILayoutUtility.GetLastRect();
-		if (GUI.Button(new Rect (_headerRect.width-50,_headerRect.y,50,_headerRect.height),"Refresh")){_selectionSeed = 0;}
+		if (GUI.Button(new Rect (_headerRect.width-50,_headerRect.y,50,_headerRect.height),"Refresh")){Utility.CurrentSeed = 0;}
 		GUILayout.EndHorizontal();
 
 		//removes any actions that were set to null, usually through deletion
@@ -65,7 +65,7 @@ public class TimelineEditor : Editor
 		Color actionColour;
 		for (int i = 0; i< _timeline.actions.Count; i++)
 		{
-			actionColour = Utility.RandomColour(_selectionSeed + _timeline.actions[i].Action.GetInstanceID());
+			actionColour = Utility.RandomColour(Utility.CurrentSeed + _timeline.actions[i].Action.GetInstanceID());
 
 			GUILayout.BeginHorizontal();
 			if (GUILayout.Button("-",GUILayout.Width(30)))
