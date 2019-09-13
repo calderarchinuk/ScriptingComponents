@@ -3,6 +3,7 @@ using System.Collections;
 
 public class ActionPlaySound : ActionBase
 {
+	//prefab
 	public GameObject SoundEffect;
 
 	public override void Activate (GameObject entity)

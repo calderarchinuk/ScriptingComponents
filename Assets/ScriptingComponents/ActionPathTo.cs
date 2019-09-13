@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class ActionPathTo : ActionBase
 {
 
-	public NavMeshAgent Agent;
+	public UnityEngine.AI.NavMeshAgent Agent;
 	public Vector3 Destination;
 
 	public override void Activate (GameObject instigator)

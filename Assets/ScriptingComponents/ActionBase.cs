@@ -11,9 +11,12 @@ public class ActionBase : MonoBehaviour
 	public virtual void OnDrawGizmos()
 	{
 		#if UNITY_EDITOR
-		GUIStyle style = new GUIStyle();
-		style.normal.textColor = Color.green; 
-		UnityEditor.Handles.Label(transform.position + Vector3.up*1.5f, gameObject.name,style);
+		if (Vector3.Dot(Camera.current.transform.forward,(transform.position - Camera.current.transform.position).normalized) > 0)
+		{
+			GUIStyle style = new GUIStyle();
+			style.normal.textColor = Color.green; 
+			UnityEditor.Handles.Label(transform.position + Vector3.up*1.5f, gameObject.name,style);
+		}
 		#endif
 
 		Gizmos.color = new Color(0,1.5f,0);
