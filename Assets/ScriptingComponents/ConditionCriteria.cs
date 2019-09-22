@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class ConditionCriteria : ConditionBase
 {
@@ -9,7 +12,7 @@ public class ConditionCriteria : ConditionBase
         And,
         Or
     }
-
+		
     public CriteriaCheckType CheckType;
 
     public List<CriteriaObject> AllCriteria = new List<CriteriaObject>();
@@ -66,3 +69,15 @@ public class ConditionCriteria : ConditionBase
         }
     }
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(ConditionCriteria))]
+class ConditionCriteriaInspector:Editor
+{
+	public override void OnInspectorGUI ()
+	{
+		EditorGUILayout.HelpBox("Compares variables from Blackboard",MessageType.Info);
+		base.OnInspectorGUI ();
+	}
+}
+#endif

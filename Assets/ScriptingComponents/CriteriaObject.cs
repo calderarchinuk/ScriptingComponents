@@ -11,6 +11,12 @@ using UnityEditor;
 [System.Serializable]
 public class CriteriaObject
 {
+	public enum VariableSource
+	{
+		Blackboard,
+		PlayerPrefs
+	}
+
     public string VariableName;
     public VariableType ExpectedType;
     
@@ -23,6 +29,8 @@ public class CriteriaObject
     public float floatCompare;
     
     public string stringCompare;
+
+	public static VariableSource Source;
 
     //TODO split up this into EvaluateBool(comparetype,source,target), EvaluateInt(comparetype,source,target), etc
     public bool EvaluateCondition()
@@ -131,22 +139,34 @@ public class CriteriaObject
 
     bool FindBoolVariable()
     {
-        return Blackboard.Instance.GetData<bool>(VariableName);
+		if (Source == VariableSource.Blackboard)
+        	return Blackboard.Instance.GetData<bool>(VariableName);
+		else 
+			return PlayerPrefs.GetInt(VariableName) == 1;
     }
 
     int FindIntVariable()
     {
-        return Blackboard.Instance.GetData<int>(VariableName);
+		if (Source == VariableSource.Blackboard)
+        	return Blackboard.Instance.GetData<int>(VariableName);
+		else 
+			return PlayerPrefs.GetInt(VariableName);
     }
 
     float FindFloatVariable()
     {
-        return Blackboard.Instance.GetData<float>(VariableName);
+		if (Source == VariableSource.Blackboard)
+			return Blackboard.Instance.GetData<float>(VariableName);
+		else 
+			return PlayerPrefs.GetFloat(VariableName);
     }
 
     string FindStringVariable()
     {
-        return Blackboard.Instance.GetData<string>(VariableName);
+		if (Source == VariableSource.Blackboard)
+			return Blackboard.Instance.GetData<string>(VariableName);
+		else 
+			return PlayerPrefs.GetString(VariableName);
     }
 }
 

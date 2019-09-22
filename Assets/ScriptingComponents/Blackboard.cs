@@ -44,6 +44,52 @@ public class Blackboard : MonoBehaviour {
         }
         return default(T);
     }
+
+	public bool DebugContents;
+
+	void OnGUI()
+	{
+		if (!DebugContents){return;}
+
+		GUILayout.Label("global blackboard");
+
+		foreach(var kvp in Data)
+		{
+			GUILayout.BeginHorizontal();
+
+			GUILayout.Label(kvp.Key);
+
+			GUILayout.Label(GetDisplayValue(kvp.Value));
+
+			GUILayout.EndHorizontal();
+		}
+	}
+
+	string GetDisplayValue(object obj)
+	{
+		if (obj.GetType() == typeof(int))
+		{
+			var i = (int)obj;
+			return i.ToString();
+		}
+		if (obj.GetType() == typeof(float))
+		{
+			var f = (float)obj;
+			return f.ToString();
+		}
+		if (obj.GetType() == typeof(bool))
+		{
+			var b = (bool)obj;
+			return b.ToString();
+		}
+		if (obj.GetType() == typeof(string))
+		{
+			var s = (string)obj;
+			return s.ToString();
+		}
+
+		return "unknown";
+	}
 }
 
 #if UNITY_EDITOR
