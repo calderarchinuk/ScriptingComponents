@@ -1,11 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class ActionBase : MonoBehaviour
 {
 	public virtual void Activate(GameObject instigator)
 	{
 		//do something
+	}
+
+	///returns a list of actions activated by timelines and conditions
+	public virtual List<GameObject> GetLinkedActions()
+	{
+		return null;
 	}
 
 	public virtual void OnDrawGizmos()

@@ -30,6 +30,23 @@ public class ConditionBase : ActionBase
 		}
 	}
 
+	public override List<GameObject> GetLinkedActions ()
+	{
+		List<GameObject> linkedActions = new List<GameObject>();
+
+		foreach(var a in PassActions)
+		{
+			if (a != null)
+				linkedActions.Add(a);
+		}
+		foreach(var a in FailActions)
+		{
+			if (a != null)
+				linkedActions.Add(a);
+		}
+		return linkedActions;
+	}
+
 	public override void OnDrawGizmos ()
 	{
 		#if UNITY_EDITOR

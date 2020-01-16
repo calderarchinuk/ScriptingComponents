@@ -50,6 +50,18 @@ public class ActionTimeline : ActionBase
 		}
 	}
 
+	public override List<GameObject> GetLinkedActions ()
+	{
+		List<GameObject> linkedActions = new List<GameObject>();
+
+		foreach(var a in actions)
+		{
+			if (a.Action != null)
+				linkedActions.Add(a.Action.gameObject);
+		}
+		return linkedActions;
+	}
+
 	public override void OnDrawGizmos ()
 	{
 		base.OnDrawGizmos ();
