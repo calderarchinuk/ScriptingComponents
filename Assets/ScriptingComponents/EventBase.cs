@@ -11,11 +11,17 @@ using System.Collections.Generic;
 //post cinematic finished
 
 
-public class EventBase : MonoBehaviour
+public class EventBase : MonoBehaviour, ILinkable
 {
-	public List<GameObject>actions = new List<GameObject>();
+	public List<GameObject> actions = new List<GameObject>();
 	public bool OneTimeOnly = false;
 	protected bool used = false;
+
+	public virtual List<GameObject> GetLinks()
+	{
+		return actions;
+	}
+	//public GameObject GameObject{ get{return gameObject;}}
 
 	protected void ActivateActions(GameObject instigator)
 	{

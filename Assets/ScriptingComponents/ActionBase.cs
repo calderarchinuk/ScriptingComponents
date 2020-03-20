@@ -2,7 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ActionBase : MonoBehaviour
+public interface ILinkable
+{
+	List<GameObject> GetLinks();
+	//GameObject GameObject{get;}
+}
+
+public class ActionBase : MonoBehaviour, ILinkable
 {
 	public virtual void Activate(GameObject instigator)
 	{
@@ -10,10 +16,12 @@ public class ActionBase : MonoBehaviour
 	}
 
 	///returns a list of actions activated by timelines and conditions
-	public virtual List<GameObject> GetLinkedActions()
+	public virtual List<GameObject> GetLinks()
 	{
 		return null;
 	}
+
+	//public GameObject GameObject{ get{return gameObject;}}
 
 	public virtual void OnDrawGizmos()
 	{

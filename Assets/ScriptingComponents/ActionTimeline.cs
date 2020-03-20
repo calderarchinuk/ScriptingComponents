@@ -50,7 +50,7 @@ public class ActionTimeline : ActionBase
 		}
 	}
 
-	public override List<GameObject> GetLinkedActions ()
+	public override List<GameObject> GetLinks ()
 	{
 		List<GameObject> linkedActions = new List<GameObject>();
 

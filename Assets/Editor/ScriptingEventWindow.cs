@@ -5,6 +5,9 @@ using UnityEditor;
 
 //TODO sort/layout windows
 
+//"child height" when links have multiple targets
+//used height = vertical height + max child height per 'row'
+
 //organize gameobjects into dragable windows. draw lines between events/actions
 //holds info about how to draw lines to linked action gameobjects
 public class ActionInfo
@@ -40,6 +43,16 @@ public class ScriptingComponents
 	public List<EventInfo> events = new List<EventInfo>(); //events are linked to gameobjects specifically
 	public List<ActionInfo> actions = new List<ActionInfo>();
 
+	public int HeirarchyDepth;
+	public static int StaticVerticalOffset = 0;
+	public int VerticalDepth;
+
+	public ScriptingComponents()
+	{
+		VerticalDepth = StaticVerticalOffset;
+		StaticVerticalOffset++;
+	}
+
 	public int GetItemCount()
 	{
 		return events.Count + actions.Count;
@@ -57,21 +70,130 @@ public class ScriptingEventWindow : EditorWindow
 	Dictionary<GameObject, ScriptingComponents> ScriptingGameObjectDict = null;
 	Dictionary<GameObject, GUIWindow> Windows;
 
+	//layout events/actions as if in a 2d grid?
+
+	//https://www.what-could-possibly-go-wrong.com/scene-traversal-recipes-for-unity/
+
+	List<GameObject> GetChildLinks(List<GameObject> hierarchyLevel)
+	{
+		var children = new List<GameObject>();
+
+		foreach (var parentGameObject in hierarchyLevel)
+		{
+			var linkable = parentGameObject.GetComponent<ILinkable>();
+			if (linkable != null && linkable.GetLinks() != null)
+			{
+				foreach(var l in linkable.GetLinks())
+				{
+					children.Add(l);
+				}
+			}
+			//foreach (Transform childTransform in parentGameObject.transform)
+			//{
+			//	var childGameObject = childTransform.gameObject;
+			//	children.Add(childGameObject);
+			//}		
+		}
+
+		return children;
+	}
+
+	void LinkBreadthFirstTraversal(List<GameObject> hierarchyLevel)
+	{
+		MaxDepth --;
+		if (MaxDepth < 0){return;}
+
+		foreach (var gameObject in hierarchyLevel)
+		{
+			// ... Do something with the game object ...
+			//Debug.Log(gameObject.name);
+			if (hierarchyLevelDict.ContainsKey(gameObject))
+			{
+				hierarchyLevelDict[gameObject] = Mathf.Max(hierarchyLevelDict[gameObject],currentLevel);
+			}
+			else
+				hierarchyLevelDict.Add(gameObject,currentLevel);
+		}
+		if (hierarchyLevel.Count == 0)
+		{
+			Debug.Log("BREAK! reached level with nothing!");
+			return;
+		}
+
+		currentLevel ++;
+		LinkBreadthFirstTraversal(GetChildLinks(hierarchyLevel)); // Recursion!
+	}
+
+
+	int MaxDepth = 100;
+	int currentLevel = 0;
+	Dictionary<GameObject,int> hierarchyLevelDict = new Dictionary<GameObject, int>();
+
+	void LinkBreadthFirstTraversal()
+	{
+		MaxDepth = 100;
+		currentLevel = 0;
+		hierarchyLevelDict = new Dictionary<GameObject, int>();
+		var events = FindObjectsOfType<EventBase>();
+		var gameobjects = new List<GameObject>();
+		foreach(var v in events)
+		{
+			if (!gameobjects.Contains(v.gameObject))
+				gameobjects.Add(v.gameObject);
+		}
+		LinkBreadthFirstTraversal(gameobjects);
+
+		Debug.Log("max depth: " + MaxDepth);
+
+		//LinkBreadthFirstTraversal(SceneManager.GetActiveScene().GetRootGameObjects());
+	}
+
+
+
+
     void Refresh()
     {
+		LinkBreadthFirstTraversal();
+		foreach(var v in hierarchyLevelDict)
+		{
+			Debug.Log(v.Key.name + " " +v.Value);
+		}
+
+
+
+		ScriptingComponents.StaticVerticalOffset = 0;
 		ScriptingGameObjectDict = new Dictionary<GameObject, ScriptingComponents>();
         var allevents = FindObjectsOfType<EventBase>();
-
-        foreach(var v in allevents)
-        {
-			//add the gameobject
+		foreach(var v in allevents)
+		{
 			if (!ScriptingGameObjectDict.ContainsKey(v.gameObject))
 			{
 				ScriptingGameObjectDict.Add(v.gameObject,new ScriptingComponents());
 			}
-            
+		}
+
+		var allactions = FindObjectsOfType<ActionBase>();
+		foreach(var v in allactions)
+		{
+			if (!ScriptingGameObjectDict.ContainsKey(v.gameObject))
+			{
+				ScriptingGameObjectDict.Add(v.gameObject,new ScriptingComponents());
+			}
+		}
+
+        foreach(var v in allevents)
+        {
 			//append events on that gameobject
 			ScriptingGameObjectDict[v.gameObject].events.Add(new EventInfo(ScriptingGameObjectDict[v.gameObject].GetItemCount()*20,v,v.actions));
+			foreach(var a in v.actions)
+			{
+				if (ScriptingGameObjectDict.ContainsKey(a.gameObject))
+				{
+					//ScriptingGameObjectDict[a.gameObject].HeirarchyDepth ++;
+					//ScriptingGameObjectDict[a.gameObject].HeirarchyDepth = Mathf.Max(ScriptingGameObjectDict[a.gameObject].HeirarchyDepth,ScriptingGameObjectDict[v.gameObject].HeirarchyDepth + 1);
+					ScriptingGameObjectDict[a.gameObject].HeirarchyDepth = hierarchyLevelDict[a.gameObject];
+				}
+			}
 
 			//get all linked components
 			/*foreach(var actiongo in v.actions)
@@ -84,18 +206,34 @@ public class ScriptingEventWindow : EditorWindow
 			}*/
         }
 
-		var allactions = FindObjectsOfType<ActionBase>();
 		foreach(var v in allactions)
 		{
-			if (!ScriptingGameObjectDict.ContainsKey(v.gameObject))
-			{
-				ScriptingGameObjectDict.Add(v.gameObject,new ScriptingComponents());
-			}
-
 			//get all components
 			foreach (var action in v.gameObject.GetComponents<ActionBase>())
 			{
-				ScriptingGameObjectDict[v.gameObject].actions.Add(new ActionInfo(ScriptingGameObjectDict[v.gameObject].GetItemCount()*20,action,action.GetLinkedActions()));
+				if (action == null){Debug.LogWarning("action is null!"); continue;}
+				if (ScriptingGameObjectDict == null){Debug.Log("null");}
+				if (ScriptingGameObjectDict[v.gameObject] == null){Debug.Log("null");}
+				if (ScriptingGameObjectDict[v.gameObject].actions == null){Debug.Log("null");}
+
+
+				if (ScriptingGameObjectDict[v.gameObject].GetItemCount() == null){Debug.Log("null");}
+
+				var linkedActions = action.GetLinks();
+				//if (linkedActions == null){Debug.Log("null");}
+
+				ScriptingGameObjectDict[v.gameObject].actions.Add(new ActionInfo(ScriptingGameObjectDict[v.gameObject].GetItemCount()*20,action,linkedActions));
+
+				if (linkedActions != null)
+				{
+					foreach(var aa in linkedActions)
+					{
+						if (ScriptingGameObjectDict[aa.gameObject] == null){continue;}
+						//ScriptingGameObjectDict[aa.gameObject].HeirarchyDepth = Mathf.Max(ScriptingGameObjectDict[aa.gameObject].HeirarchyDepth,ScriptingGameObjectDict[v.gameObject].HeirarchyDepth + 1);
+						ScriptingGameObjectDict[aa.gameObject].HeirarchyDepth = hierarchyLevelDict[aa.gameObject];
+					}
+				}
+				//ScriptingGameObjectDict[v.gameObject].HeirarchyDepth ++;
 			}
 		}
 
@@ -166,29 +304,6 @@ public class ScriptingEventWindow : EditorWindow
 				}
 			}
 		}
-
-        /*GUILayout.BeginHorizontal();
-		foreach(var kvp in ScriptingGameObjectDict)
-        {
-            GUILayout.BeginVertical();
-			if (GUILayout.Button(kvp.Key.name))
-            {
-				Selection.activeGameObject = kvp.Key;
-            }
-			GUI.color = Color.red;
-			foreach(var events in kvp.Value.events)
-            {
-				GUILayout.Label(events.GetType().ToString());
-            }
-			GUI.color = Color.green;
-			foreach(var actions in kvp.Value.actions)
-			{
-				GUILayout.Label(actions.GetType().ToString());
-			}
-			GUI.color = Color.white;
-            GUILayout.EndVertical();
-        }
-        GUILayout.EndHorizontal();*/
     }
 
 	Vector2 GetLinkPoint(GUIWindow window, int offset, bool right)
@@ -218,13 +333,15 @@ public class GUIWindow
 
 	public Rect CalculateSize ()
 	{
-		return new Rect(50,50,150,20*components.actions.Count + 20 * components.events.Count);
+		int rightness = 50 + components.HeirarchyDepth * 200;
+		int downness = 50 + components.VerticalDepth * 100;
+		return new Rect(rightness,downness,150,20*components.actions.Count + 20 * components.events.Count);
 	}
 
 	public void WindowFunction(int windowID)
 	{
 		GUI.DragWindow(new Rect(0, 0, 10000, 20));
-
+		GUILayout.Label("hierarchy " + components.HeirarchyDepth);
 		//GUILayout.BeginVertical();
 		if (GUILayout.Button("select"))
 		{

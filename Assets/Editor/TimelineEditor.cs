@@ -129,6 +129,7 @@ public class TimelineEditor : Editor
 		{
 			_timeline.actions.Add(NewCinematicAction(v));
 		}
+		UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
 	}
 
 	void NewAction(CinematicActionTypes newType, float value1 = 0, bool value2 = false)
@@ -168,6 +169,7 @@ public class TimelineEditor : Editor
 		{
 			_timeline.actions.Add(NewCinematicAction(newAC));
 		}
+		UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
 	}
 
 	ActionTimeline.CinematicAction NewCinematicAction(ActionBase action)
